@@ -40,11 +40,15 @@ export const BookResponseSchema = Type.Object({
 
 // Books list response schema
 export const BooksListResponseSchema = Type.Object({
-  books: Type.Array(BookResponseSchema),
-  pagination: Type.Object({
-    page: Type.Number(),
-    limit: Type.Number(),
-    total: Type.Number(),
-    totalPages: Type.Number(),
+  success: Type.Boolean(),
+  data: Type.Object({
+    items: Type.Array(BookResponseSchema),
+    pagination: Type.Object({
+      page: Type.Number(),
+      limit: Type.Number(),
+      total: Type.Number(),
+      totalPages: Type.Number(),
+    }),
   }),
+  timestamp: Type.String({ format: "date-time" }),
 });

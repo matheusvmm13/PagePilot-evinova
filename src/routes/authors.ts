@@ -1,29 +1,29 @@
 import { FastifyInstance } from "fastify";
-import { BookHandlers } from "../handlers/index";
+import { AuthorHandlers } from "../handlers/index";
 import { PaginatedResponseSchema } from "../types/common";
 import {
-  CreateBookSchema,
-  UpdateBookSchema,
-  BookResponseSchema,
-  BooksListResponseSchema,
-} from "../types/books";
+  CreateAuthorSchema,
+  UpdateAuthorSchema,
+  AuthorResponseSchema,
+  AuthorsListResponseSchema,
+} from "../types/author";
 
-export default async function bookRoutes(fastify: FastifyInstance) {
-  // GET /books - List all books with pagination
+export default async function authorRoutes(fastify: FastifyInstance) {
+  // GET /authors - List all authors with pagination
   fastify.get(
     "/",
     {
       schema: {
         querystring: PaginatedResponseSchema,
         response: {
-          200: BooksListResponseSchema,
+          200: AuthorsListResponseSchema,
         },
       },
     },
-    BookHandlers.getAllBooks
+    AuthorHandlers.getAllAuthors
   );
 
-  // GET /books/:id - Get book by ID
+  // GET /authors/:id - Get author by ID
   fastify.get(
     "/:id",
     {
@@ -40,38 +40,38 @@ export default async function bookRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               success: { type: "boolean" },
-              data: BookResponseSchema,
+              data: AuthorResponseSchema,
               timestamp: { type: "string", format: "date-time" },
             },
           },
         },
       },
     },
-    BookHandlers.getBookById
+    AuthorHandlers.getAuthorById
   );
 
-  // POST /books - Create new book
+  // POST /authors - Create new author
   fastify.post(
     "/",
     {
       schema: {
-        body: CreateBookSchema,
+        body: CreateAuthorSchema,
         response: {
           201: {
             type: "object",
             properties: {
               success: { type: "boolean" },
-              data: BookResponseSchema,
+              data: AuthorResponseSchema,
               timestamp: { type: "string", format: "date-time" },
             },
           },
         },
       },
     },
-    BookHandlers.createBook
+    AuthorHandlers.createAuthor
   );
 
-  // PUT /books/:id - Update book
+  // PUT /authors/:id - Update author
   fastify.put(
     "/:id",
     {
@@ -83,23 +83,23 @@ export default async function bookRoutes(fastify: FastifyInstance) {
           },
           required: ["id"],
         },
-        body: UpdateBookSchema,
+        body: UpdateAuthorSchema,
         response: {
           200: {
             type: "object",
             properties: {
               success: { type: "boolean" },
-              data: BookResponseSchema,
+              data: AuthorResponseSchema,
               timestamp: { type: "string", format: "date-time" },
             },
           },
         },
       },
     },
-    BookHandlers.updateBook
+    AuthorHandlers.updateAuthor
   );
 
-  // DELETE /books/:id - Delete book
+  // DELETE /authors/:id - Delete author
   fastify.delete(
     "/:id",
     {
@@ -113,10 +113,27 @@ export default async function bookRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    BookHandlers.deleteBook
+    AuthorHandlers.deleteAuthor
   );
 
-  // GET /books/search?q=term - Search books
+  // GET /authors/:id/books - Get all books by author
+  fastify.get(
+    "/:id/books",
+    {
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" },
+          },
+          required: ["id"],
+        },
+      },
+    },
+    AuthorHandlers.getAuthorBooks
+  );
+
+  // GET /authors/search?q=term - Search authors
   fastify.get(
     "/search",
     {
@@ -130,27 +147,6 @@ export default async function bookRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    BookHandlers.searchBooks
-  );
-
-  // GET /books/year/:year - Get books by publication year
-  fastify.get(
-    "/year/:year",
-    {
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            year: {
-              type: "number",
-              minimum: 1500,
-              maximum: new Date().getFullYear(),
-            },
-          },
-          required: ["year"],
-        },
-      },
-    },
-    BookHandlers.getBooksByYear
+    AuthorHandlers.searchAuthors
   );
 }

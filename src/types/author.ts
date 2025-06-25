@@ -29,11 +29,15 @@ export const AuthorResponseSchema = Type.Object({
 
 // Authors list response schema
 export const AuthorsListResponseSchema = Type.Object({
-  authors: Type.Array(AuthorResponseSchema),
-  pagination: Type.Object({
-    page: Type.Number(),
-    limit: Type.Number(),
-    total: Type.Number(),
-    totalPages: Type.Number(),
+  success: Type.Boolean(),
+  data: Type.Object({
+    items: Type.Array(AuthorResponseSchema),
+    pagination: Type.Object({
+      page: Type.Number(),
+      limit: Type.Number(),
+      total: Type.Number(),
+      totalPages: Type.Number(),
+    }),
   }),
+  timestamp: Type.String({ format: "date-time" }),
 });
