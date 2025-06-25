@@ -22,7 +22,6 @@ export class AuthorModel extends BaseModel {
     return author as Author | null;
   }
 
-  // Author-specific methods
   async findByName(name: string) {
     const authors = await this.findAll();
     return (
