@@ -1,88 +1,291 @@
-# EXPRESS TYPESCRIPT API
+# PagePilot Backend API
 
-This is boilerplate of a Node.js API using Express and Typescript.
+A Node.js API built with Fastify and TypeScript for managing books and authors.
 
+## Table of Contents
 
-## Installing dependencies
+- [Quick Start](#quick-start)
+- [Development](#development)
+- [Docker](#docker)
+- [API Documentation](#api-documentation)
+  - [Base URL & Health](#base-url--health)
+  - [Authors](#authors)
+  - [Books](#books)
+  - [Error Handling](#error-handling)
+- [Validation](#validation)
+- [Future Improvements](#future-improvements)
 
-```
+## Quick Start
+
+```bash
+# Install dependencies
 npm install
-```
 
-## Building the application
+# Run in development
+npm run dev
 
-```
-npm run docker:build
-```
-
-## Running the application
-
-```
+# Run with Docker
 npm run docker:up
-```
-
-## Closing the application
-
-```
-npm docker:down
-```
-
-## Testing
-
-With the application running:
-
-```
-npm test
 ```
 
 ## Development
 
-### Running in development mode
-
-```
+```bash
+# Development mode
 npm run dev
-```
 
-### Auto-fix and format
+# Build
+npm run build
 
-```
+# Test
+npm test
+
+# Lint
 npm run lint
 ```
 
 ## Docker
 
-### Running from Dockerfile
+```bash
+# Build and run
+npm run docker:up
 
-From the app directory run:
+# Stop
+npm run docker:down
 
-```
-docker build . -t <image name>
-docker run -dp 3000:3000 <image name>
-```
-
-### Running from dockercompose.yaml
-
-From the app directory run:
-
-```
-docker-compose build
-docker-compose up
+# Build only
+npm run docker:build
 ```
 
-## Documentation
+## API Documentation
 
----
+### Base URL & Health
 
-## API endpoints:
+**Base URL:** `http://localhost:3000`
 
-### Rest Endpoint:
+| Endpoint  | Method | Description       |
+| --------- | ------ | ----------------- |
+| `/health` | GET    | API health status |
 
-`http://localhost:3000`
+**Response:**
 
-## **Get Something**
+```json
+{
+  "status": "OK",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "uptime": 123.456
+}
+```
 
-Returns json data with something.
+### Authors
 
-| URL          | Method | Params | Query                                      | Success response | Error response |
-| ------------ | ------ | ------ | ------------------------------------------ | ---------------- | -------------- |
-| `/countries` | GET    | None   | `filter=[string], order=['asc' or 'desc']` | Status 200       | Status 404     |
+| Endpoint                 | Method | Description        | Query Params    |
+| ------------------------ | ------ | ------------------ | --------------- |
+| `GET /authors`           | GET    | List all authors   | `page`, `limit` |
+| `GET /authors/:id`       | GET    | Get author by ID   | -               |
+| `POST /authors`          | POST   | Create new author  | -               |
+| `PUT /authors/:id`       | PUT    | Update author      | -               |
+| `DELETE /authors/:id`    | DELETE | Delete author      | -               |
+| `GET /authors/:id/books` | GET    | Get author's books | -               |
+| `GET /authors/search`    | GET    | Search authors     | `q`             |
+
+**Example Request (Create Author):**
+
+```json
+{
+  "name": "Marie Smith",
+  "bio": "A prolific writer...",
+  "birthYear": 1980
+}
+```
+
+**Example Response (List Authors):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "uuid",
+        "name": "Marie Smith",
+        "bio": "A prolific writer...",
+        "birthYear": 1980,
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T10:30:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 25,
+      "totalPages": 3
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+### Books
+
+| Endpoint                | Method | Description     | Query Params    |
+| ----------------------- | ------ | --------------- | --------------- |
+| `GET /books`            | GET    | List all books  | `page`, `limit` |
+| `GET /books/:id`        | GET    | Get book by ID  | -               |
+| `POST /books`           | POST   | Create new book | -               |
+| `PUT /books/:id`        | PUT    | Update book     | -               |
+| `DELETE /books/:id`     | DELETE | Delete book     | -               |
+| `GET /books/search`     | GET    | Search books    | `q`             |
+| `GET /books/year/:year` | GET    | Books by year   | -               |
+
+**Example Request (Create Book):**
+
+```json
+{
+  "title": "The Great Novel",
+  "summary": "An awesome story...",
+  "publicationYear": 2020,
+  "authorId": "author-uuid"
+}
+```
+
+**Example Response (List Books):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "uuid",
+        "title": "The Great Novel",
+        "summary": "An awesome story...",
+        "publicationYear": 2020,
+        "authorId": "author-uuid",
+        "author": {
+          "id": "author-uuid",
+          "name": "Marie Smith"
+        },
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T10:30:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 15,
+      "totalPages": 2
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+### Error Handling
+
+**Error Response Format:**
+
+```json
+{
+  "success": false,
+  "error": "Error message description",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+**HTTP Status Codes:**
+
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `404` - Not Found
+- `409` - Conflict (duplicate name/title)
+- `422` - Validation Error
+- `500` - Internal Server Error
+
+## Validation
+
+This API uses **TypeBox** for schema validation, providing:
+
+**Validation Rules:**
+
+- **Author:** `name` (1-100 chars), `bio` (1-1000 chars), `birthYear` (1800-current)
+- **Book:** `title` (1-200 chars), `summary` (1-2000 chars), `publicationYear` (1500-current), `authorId` (UUID)
+
+### **Schema Examples**
+
+**Author Creation Schema:**
+
+```typescript
+const CreateAuthorSchema = Type.Object({
+  name: Type.String({ minLength: 1, maxLength: 100 }),
+  bio: Type.String({ minLength: 1, maxLength: 1000 }),
+  birthYear: Type.Number({ minimum: 1800, maximum: new Date().getFullYear() }),
+});
+```
+
+**Book Response Schema:**
+
+```typescript
+const BookResponseSchema = Type.Object({
+  id: Type.String({ format: "uuid" }),
+  title: Type.String(),
+  summary: Type.String(),
+  publicationYear: Type.Number(),
+  authorId: Type.String({ format: "uuid" }),
+  author: Type.Object({
+    id: Type.String({ format: "uuid" }),
+    name: Type.String(),
+  }),
+  createdAt: Type.String({ format: "date-time" }),
+  updatedAt: Type.String({ format: "date-time" }),
+});
+```
+
+**Route Integration:**
+
+```typescript
+fastify.post(
+  "/",
+  {
+    schema: {
+      body: CreateAuthorSchema,
+      response: {
+        201: AuthorResponseSchema,
+      },
+    },
+  },
+  handler
+);
+```
+
+### **Automatic Validation**
+
+- **Request Validation** - Incoming data is validated against schemas
+- **Response Validation** - Outgoing data is validated before sending
+- **Type Safety** - TypeScript types are automatically inferred
+- **Error Handling** - Invalid requests return 422 with detailed errors
+
+## Future Improvements
+
+### Architecture Enhancements
+
+- **Repository Pattern**: For database abstraction and testing
+- **Database Integration**: MongoDB/PostgreSQL with ORM
+- **Authentication**: JWT tokens and role-based access
+- **Rate Limiting**: API request throttling
+- **Caching**: Redis for performance optimization
+- **API Documentation**: OpenAPI/Swagger integration
+
+### Current Benefits
+
+- **Clean Architecture**: Routes → Handlers → Services → Models
+- **Type Safety**: Full TypeScript with TypeBox schemas
+- **Schema Validation**: Runtime validation with TypeBox
+- **In-Memory Storage**: Fast development and testing
+- **UUID Generation**: Proper ID management
+- **Error Handling**: Centralized error management
+- **Docker Support**: Containerized deployment ready
+- **Extensible Design**: Easy to add new features
+
+This foundation would allow for an easy migration to more complex architectures as requirements evolve.
