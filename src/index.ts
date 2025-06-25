@@ -39,14 +39,27 @@ async function registerPlugins() {
 }
 
 async function registerRoutes() {
-  await fastify.register(authorRoutes, { prefix: "/authors" });
-  await fastify.register(bookRoutes, { prefix: "/books" });
+  await fastify.register(authorRoutes, { prefix: "/v1/authors" });
+  await fastify.register(bookRoutes, { prefix: "/v1/books" });
 }
 
 // Health check
 fastify.get("/health", async () => {
   logger.info("Health check requested");
   return { status: "ok", timestamp: new Date().toISOString() };
+});
+
+// API version info
+fastify.get("/v1", async () => {
+  return {
+    version: "1.0.0",
+    status: "active",
+    endpoints: {
+      authors: "/v1/authors",
+      books: "/v1/books",
+      health: "/health",
+    },
+  };
 });
 
 const port = process.env.PORT || 3000;

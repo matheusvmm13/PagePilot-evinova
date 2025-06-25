@@ -65,6 +65,7 @@ npm run docker:build
 
 | Endpoint  | Method | Description       |
 | --------- | ------ | ----------------- |
+| `/v1`     | GET    | API version info  |
 | `/health` | GET    | API health status |
 
 **Response:**
@@ -79,15 +80,15 @@ npm run docker:build
 
 ### Authors
 
-| Endpoint                 | Method | Description        | Query Params    |
-| ------------------------ | ------ | ------------------ | --------------- |
-| `GET /authors`           | GET    | List all authors   | `page`, `limit` |
-| `GET /authors/:id`       | GET    | Get author by ID   | -               |
-| `POST /authors`          | POST   | Create new author  | -               |
-| `PUT /authors/:id`       | PUT    | Update author      | -               |
-| `DELETE /authors/:id`    | DELETE | Delete author      | -               |
-| `GET /authors/:id/books` | GET    | Get author's books | -               |
-| `GET /authors/search`    | GET    | Search authors     | `q`             |
+| Endpoint                    | Method | Description        | Query Params    |
+| --------------------------- | ------ | ------------------ | --------------- |
+| `GET /v1/authors`           | GET    | List all authors   | `page`, `limit` |
+| `GET /v1/authors/:id`       | GET    | Get author by ID   | -               |
+| `POST /v1/authors`          | POST   | Create new author  | -               |
+| `PUT /v1/authors/:id`       | PUT    | Update author      | -               |
+| `DELETE /v1/authors/:id`    | DELETE | Delete author      | -               |
+| `GET /v1/authors/:id/books` | GET    | Get author's books | -               |
+| `GET /v1/authors/search`    | GET    | Search authors     | `q`             |
 
 **Example Request (Create Author):**
 
@@ -128,15 +129,15 @@ npm run docker:build
 
 ### Books
 
-| Endpoint                | Method | Description     | Query Params    |
-| ----------------------- | ------ | --------------- | --------------- |
-| `GET /books`            | GET    | List all books  | `page`, `limit` |
-| `GET /books/:id`        | GET    | Get book by ID  | -               |
-| `POST /books`           | POST   | Create new book | -               |
-| `PUT /books/:id`        | PUT    | Update book     | -               |
-| `DELETE /books/:id`     | DELETE | Delete book     | -               |
-| `GET /books/search`     | GET    | Search books    | `q`             |
-| `GET /books/year/:year` | GET    | Books by year   | -               |
+| Endpoint                   | Method | Description     | Query Params    |
+| -------------------------- | ------ | --------------- | --------------- |
+| `GET /v1/books`            | GET    | List all books  | `page`, `limit` |
+| `GET /v1/books/:id`        | GET    | Get book by ID  | -               |
+| `POST /v1/books`           | POST   | Create new book | -               |
+| `PUT /v1/books/:id`        | PUT    | Update book     | -               |
+| `DELETE /v1/books/:id`     | DELETE | Delete book     | -               |
+| `GET /v1/books/search`     | GET    | Search books    | `q`             |
+| `GET /v1/books/year/:year` | GET    | Books by year   | -               |
 
 **Example Request (Create Book):**
 
