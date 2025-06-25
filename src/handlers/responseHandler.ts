@@ -5,6 +5,7 @@ export class ResponseHandler {
     return reply.status(statusCode).send({
       success: true,
       data,
+      timestamp: new Date().toISOString(),
     });
   }
 
