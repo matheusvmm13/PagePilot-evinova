@@ -1,71 +1,68 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import dotenv from "dotenv";
 import logger from "./logger";
-import { authorRoutes, bookRoutes } from "./routes";
+import authorRoutes from "./routes/authors";
+import bookRoutes from "./routes/books";
 
-dotenv.config();
+declare module "fastify" {
+  interface FastifyRequest {
+    startTime?: number;
+  }
+}
 
-async function startServer() {
-  const fastify = Fastify({
-    logger: true,
-  });
+const fastify = Fastify({
+  logger: false,
+});
 
-  // Register plugins
-  await fastify.register(cors, {
-    origin: true,
-  });
+// Request timing and logging
+fastify.addHook("onRequest", (request, reply, done) => {
+  request.startTime = Date.now();
+  logger.info(`Request: ${request.method} ${request.url}`);
+  done();
+});
 
-  await fastify.register(helmet, {
-    contentSecurityPolicy: false,
-  });
+fastify.addHook("onResponse", (request, reply, done) => {
+  const duration = Date.now() - (request.startTime || Date.now());
+  logger.info(
+    `${request.method} ${request.url} → ${reply.statusCode} (${duration.toFixed(
+      2
+    )}ms)`
+  );
+  done();
+});
 
-  // Health check
-  fastify.get("/health", async (request, reply) => {
-    return {
-      status: "OK",
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-    };
-  });
+// Register plugins and routes
+async function registerPlugins() {
+  await fastify.register(cors, { origin: true });
+  await fastify.register(helmet, { contentSecurityPolicy: false });
+}
 
-  // API info
-  fastify.get("/", async (request, reply) => {
-    return {
-      message: "PagePilot API",
-      version: "1.0.0",
-      endpoints: {
-        authors: "/authors",
-        books: "/books",
-        health: "/health",
-      },
-    };
-  });
-
-  // Register routes
+async function registerRoutes() {
   await fastify.register(authorRoutes, { prefix: "/authors" });
   await fastify.register(bookRoutes, { prefix: "/books" });
+}
 
-  const port = process.env.PORT || 3000;
-  const host = process.env.HOST || "0.0.0.0";
+// Health check
+fastify.get("/health", async () => {
+  logger.info("Health check requested");
+  return { status: "ok", timestamp: new Date().toISOString() };
+});
 
+const port = process.env.PORT || 3000;
+const host = process.env.HOST || "0.0.0.0";
+
+// Server startup
+async function startServer() {
   try {
+    await registerPlugins();
+    await registerRoutes();
     await fastify.listen({ port: Number(port), host });
-    logger.info(
-      `🚀 PagePilot API server is running on http://localhost:${port}`
-    );
-    logger.info(`👤 Authors API: http://localhost:${port}/authors`);
-    logger.info(`📚 Books API: http://localhost:${port}/books`);
-    logger.info(`❤️ Health check: http://localhost:${port}/health`);
+    logger.info(`Server is running on http://${host}:${port}`);
   } catch (err) {
-    fastify.log.error(err);
+    logger.error("Failed to start server", err);
     process.exit(1);
   }
 }
 
-// Start the server
-startServer().catch((err) => {
-  console.error("Failed to start server:", err);
-  process.exit(1);
-});
+startServer();
