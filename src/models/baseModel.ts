@@ -63,4 +63,8 @@ export abstract class BaseModel {
   async count(): Promise<number> {
     return this.data.size;
   }
+
+  async clear(): Promise<void> {
+    this.data.clear();
+  }
 }

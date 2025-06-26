@@ -11,65 +11,65 @@ declare module "fastify" {
   }
 }
 
-const fastify = Fastify({
-  logger: false,
-});
+export function buildFastify() {
+  const fastify = Fastify({
+    logger: false,
+  });
 
-// Request timing and logging
-fastify.addHook("onRequest", (request, reply, done) => {
-  request.startTime = Date.now();
-  logger.info(`Request: ${request.method} ${request.url}`);
-  done();
-});
+  // Request timing and logging
+  fastify.addHook("onRequest", (request, reply, done) => {
+    request.startTime = Date.now();
+    logger.info(`Request: ${request.method} ${request.url}`);
+    done();
+  });
 
-fastify.addHook("onResponse", (request, reply, done) => {
-  const duration = Date.now() - (request.startTime || Date.now());
-  logger.info(
-    `${request.method} ${request.url} → ${reply.statusCode} (${duration.toFixed(
-      2
-    )}ms)`
-  );
-  done();
-});
+  fastify.addHook("onResponse", (request, reply, done) => {
+    const duration = Date.now() - (request.startTime || Date.now());
+    logger.info(
+      `${request.method} ${request.url} → ${
+        reply.statusCode
+      } (${duration.toFixed(2)}ms)`
+    );
+    done();
+  });
 
-// Register plugins and routes
-async function registerPlugins() {
-  await fastify.register(cors, { origin: true });
-  await fastify.register(helmet, { contentSecurityPolicy: false });
+  // Register routes
+  fastify.register(authorRoutes, { prefix: "/v1/authors" });
+  fastify.register(bookRoutes, { prefix: "/v1/books" });
+
+  // Health check
+  fastify.get("/health", async () => {
+    logger.info("Health check requested");
+    return { status: "ok", timestamp: new Date().toISOString() };
+  });
+
+  // API version info
+  fastify.get("/v1", async () => {
+    return {
+      version: "1.0.0",
+      status: "active",
+      endpoints: {
+        authors: "/v1/authors",
+        books: "/v1/books",
+        health: "/health",
+      },
+    };
+  });
+
+  return fastify;
 }
-
-async function registerRoutes() {
-  await fastify.register(authorRoutes, { prefix: "/v1/authors" });
-  await fastify.register(bookRoutes, { prefix: "/v1/books" });
-}
-
-// Health check
-fastify.get("/health", async () => {
-  logger.info("Health check requested");
-  return { status: "ok", timestamp: new Date().toISOString() };
-});
-
-// API version info
-fastify.get("/v1", async () => {
-  return {
-    version: "1.0.0",
-    status: "active",
-    endpoints: {
-      authors: "/v1/authors",
-      books: "/v1/books",
-      health: "/health",
-    },
-  };
-});
-
-const port = process.env.PORT || 3000;
-const host = process.env.HOST || "0.0.0.0";
 
 // Server startup
 async function startServer() {
+  const fastify = buildFastify();
+
   try {
-    await registerPlugins();
-    await registerRoutes();
+    await fastify.register(cors, { origin: true });
+    await fastify.register(helmet, { contentSecurityPolicy: false });
+
+    const port = process.env.NODE_ENV === "test" ? 0 : process.env.PORT || 3000;
+    const host = process.env.HOST || "0.0.0.0";
+
     await fastify.listen({ port: Number(port), host });
     logger.info(`Server is running on http://${host}:${port}`);
   } catch (err) {

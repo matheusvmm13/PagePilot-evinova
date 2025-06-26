@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "start": "node dist/index.js",
     "build": "tsc",
-    "test": "jest --runInBand --verbose --detectOpenHandle",
+    "test": "jest --runInBand --verbose --detectOpenHandles",
     "docker:build": "docker compose -f docker/docker-compose.yaml build",
     "docker:up": "docker compose -f docker/docker-compose.yaml up",
     "docker:down": "docker compose -f docker/docker-compose.yaml down"
