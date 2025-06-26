@@ -1,15 +1,6 @@
-jest.mock("../../logger", () => ({
-  info: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  debug: jest.fn(),
-}));
-
 import { authorModel } from "../authorModel";
 import { testAuthors } from "../../__tests__/helpers/testData";
 import { Author } from "../../types/author";
-
-// Mock the logger to avoid Fastify dependencies
 
 describe("AuthorModel", () => {
   beforeEach(async () => {
