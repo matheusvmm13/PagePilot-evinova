@@ -56,13 +56,11 @@ export class BookService {
   async createBook(
     data: Omit<Book, "id" | "createdAt" | "updatedAt">
   ): Promise<BookWithAuthor> {
-    // Validate author exists
     const author = await authorModel.findById(data.authorId);
     if (!author) {
       throw new Error(`Author with ID "${data.authorId}" not found`);
     }
 
-    // Check if book with same title already exists
     const existingBook = await bookModel.findByTitle(data.title);
     if (existingBook) {
       throw new Error(`Book with title "${data.title}" already exists`);
@@ -82,7 +80,6 @@ export class BookService {
       throw new Error(`Book with ID "${id}" not found`);
     }
 
-    // If authorId is being updated, validate the new author exists
     if (data.authorId && data.authorId !== existingBook.authorId) {
       const author = await authorModel.findById(data.authorId);
       if (!author) {
@@ -90,7 +87,6 @@ export class BookService {
       }
     }
 
-    // If title is being updated, check for duplicates
     if (data.title && data.title !== existingBook.title) {
       const duplicateBook = await bookModel.findByTitle(data.title);
       if (duplicateBook) {
