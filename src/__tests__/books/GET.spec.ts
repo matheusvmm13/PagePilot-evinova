@@ -73,8 +73,6 @@ describe("Books API - GET", () => {
       expect(response.statusCode).toBe(200);
       const result = JSON.parse(response.payload);
 
-      console.log(result.data.items);
-
       expect(result.success).toBe(true);
       expect(result.data.items).toHaveLength(2);
       expect(result.data.pagination).toEqual({
@@ -189,7 +187,6 @@ describe("Books API - GET", () => {
 
       expect(response.statusCode).toBe(200);
       const result = JSON.parse(response.payload);
-      console.log(result);
 
       expect(result.success).toBe(true);
       expect(result.data.books).toHaveLength(1);
