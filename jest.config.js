@@ -16,4 +16,7 @@ module.exports = {
     '!src/__tests__/**/*',
   ],
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/helpers/testSetup.ts'],
+  testEnvironmentOptions: {
+    NODE_ENV: 'test',
+  },
 };
