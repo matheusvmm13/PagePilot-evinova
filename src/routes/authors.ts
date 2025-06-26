@@ -14,6 +14,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/",
     {
       schema: {
+        summary: "List all authors",
+        tags: ["Authors"],
         querystring: PaginatedResponseSchema,
         response: {
           200: AuthorsListResponseSchema,
@@ -28,6 +30,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/:id",
     {
       schema: {
+        summary: "Get author by ID",
+        tags: ["Authors"],
         params: {
           type: "object",
           properties: {
@@ -55,6 +59,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/",
     {
       schema: {
+        summary: "Create a new author",
+        tags: ["Authors"],
         body: CreateAuthorSchema,
         response: {
           201: {
@@ -76,6 +82,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/:id",
     {
       schema: {
+        summary: "Update an author",
+        tags: ["Authors"],
         params: {
           type: "object",
           properties: {
@@ -104,6 +112,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/:id",
     {
       schema: {
+        summary: "Delete an author",
+        tags: ["Authors"],
         params: {
           type: "object",
           properties: {
@@ -121,6 +131,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/:id/books",
     {
       schema: {
+        summary: "Get all books by author",
+        tags: ["Authors"],
         params: {
           type: "object",
           properties: {
@@ -138,6 +150,8 @@ export default async function authorRoutes(fastify: FastifyInstance) {
     "/search",
     {
       schema: {
+        summary: "Search authors",
+        tags: ["Authors"],
         querystring: {
           type: "object",
           properties: {

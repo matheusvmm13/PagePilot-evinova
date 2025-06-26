@@ -8,6 +8,7 @@ A Node.js API built with Fastify and TypeScript for managing books and authors.
 - [Development](#development)
 - [Docker](#docker)
 - [API Documentation](#api-documentation)
+  - [Swagger Documentation](#swagger-documentation)
   - [Base URL & Health](#base-url--health)
   - [Authors](#authors)
   - [Books](#books)
@@ -58,6 +59,12 @@ npm run docker:build
 ```
 
 ## API Documentation
+
+### Swagger Documentation
+
+**Interactive API Documentation:** `http://localhost:3000/docs`
+
+The API includes comprehensive Swagger/OpenAPI documentation that you can explore all available endpoints, test them directly from the browser, and view detailed schema information.
 
 ### Base URL & Health
 
@@ -276,7 +283,6 @@ fastify.post(
 - **Authentication**: JWT tokens and user access
 - **Rate Limiting**: API request throttling
 - **Caching**: For performance optimization
-- **API Documentation**: OpenAPI/Swagger integration
 
 ### Current Benefits
 
@@ -286,6 +292,7 @@ fastify.post(
 - **In-Memory Storage**: Fast development and testing
 - **UUID Generation**: Proper ID management
 - **Error Handling**: Centralized error management
+- **API Documentation**: OpenAPI/Swagger integration
 - **Docker Support**: Containerized deployment ready
 - **Extensible Design**: Easy to add new features
 

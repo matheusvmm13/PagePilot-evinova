@@ -14,6 +14,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/",
     {
       schema: {
+        summary: "List all books",
+        tags: ["Books"],
         querystring: PaginatedResponseSchema,
         response: {
           200: BooksListResponseSchema,
@@ -28,6 +30,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/:id",
     {
       schema: {
+        summary: "Get book by ID",
+        tags: ["Books"],
         params: {
           type: "object",
           properties: {
@@ -55,6 +59,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/",
     {
       schema: {
+        summary: "Create a new book",
+        tags: ["Books"],
         body: CreateBookSchema,
         response: {
           201: {
@@ -76,6 +82,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/:id",
     {
       schema: {
+        summary: "Update a book",
+        tags: ["Books"],
         params: {
           type: "object",
           properties: {
@@ -104,6 +112,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/:id",
     {
       schema: {
+        summary: "Delete a book",
+        tags: ["Books"],
         params: {
           type: "object",
           properties: {
@@ -121,6 +131,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/search",
     {
       schema: {
+        summary: "Search books",
+        tags: ["Books"],
         querystring: {
           type: "object",
           properties: {
@@ -138,6 +150,8 @@ export default async function bookRoutes(fastify: FastifyInstance) {
     "/year/:year",
     {
       schema: {
+        summary: "Get books by publication year",
+        tags: ["Books"],
         params: {
           type: "object",
           properties: {

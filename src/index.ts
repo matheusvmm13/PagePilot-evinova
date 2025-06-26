@@ -1,9 +1,10 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
+import swagger from "@fastify/swagger";
+import swaggerUI from "@fastify/swagger-ui";
 import logger from "./logger";
-import authorRoutes from "./routes/authors";
-import bookRoutes from "./routes/books";
+import { authorRoutes, bookRoutes, utilityRoutes } from "./routes";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -11,7 +12,7 @@ declare module "fastify" {
   }
 }
 
-export function buildFastify() {
+export function buildFastify(registerRoutes = false) {
   const fastify = Fastify({
     logger: false,
   });
@@ -33,33 +34,15 @@ export function buildFastify() {
     done();
   });
 
-  // Register routes
-  fastify.register(authorRoutes, { prefix: "/v1/authors" });
-  fastify.register(bookRoutes, { prefix: "/v1/books" });
-
-  // Health check
-  fastify.get("/health", async () => {
-    logger.info("Health check requested");
-    return { status: "ok", timestamp: new Date().toISOString() };
-  });
-
-  // API version info
-  fastify.get("/v1", async () => {
-    return {
-      version: "1.0.0",
-      status: "active",
-      endpoints: {
-        authors: "/v1/authors",
-        books: "/v1/books",
-        health: "/health",
-      },
-    };
-  });
+  if (registerRoutes) {
+    fastify.register(authorRoutes, { prefix: "/v1/authors" });
+    fastify.register(bookRoutes, { prefix: "/v1/books" });
+    fastify.register(utilityRoutes);
+  }
 
   return fastify;
 }
 
-// Server startup
 async function startServer() {
   const fastify = buildFastify();
 
@@ -67,11 +50,41 @@ async function startServer() {
     await fastify.register(cors, { origin: true });
     await fastify.register(helmet, { contentSecurityPolicy: false });
 
+    await fastify.register(swagger, {
+      openapi: {
+        info: {
+          title: "PagePilot API",
+          description: "API documentation for the PagePilot backend service.",
+          version: "1.0.0",
+        },
+        servers: [{ url: "http://localhost:3000" }],
+        tags: [
+          { name: "Authors", description: "Author related end-points" },
+          { name: "Books", description: "Book related end-points" },
+          { name: "Utility", description: "Utility and health checks" },
+        ],
+      },
+    });
+
+    await fastify.register(swaggerUI, {
+      routePrefix: "/docs",
+      uiConfig: {
+        docExpansion: "list",
+        deepLinking: true,
+      },
+    });
+
+    // Register routes
+    fastify.register(authorRoutes, { prefix: "/v1/authors" });
+    fastify.register(bookRoutes, { prefix: "/v1/books" });
+    fastify.register(utilityRoutes);
+
     const port = process.env.NODE_ENV === "test" ? 0 : process.env.PORT || 3000;
     const host = process.env.HOST || "0.0.0.0";
 
     await fastify.listen({ port: Number(port), host });
     logger.info(`Server is running on http://${host}:${port}`);
+    logger.info(`Swagger docs available at http://${host}:${port}/docs`);
   } catch (err) {
     logger.error("Failed to start server", err);
     process.exit(1);
