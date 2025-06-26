@@ -1,8 +1,5 @@
-import { FastifyInstance } from "fastify";
-import { buildFastify } from "../../index";
-import { authorModel } from "../../models/authorModel";
 import { testAuthors, invalidAuthorData } from "../helpers/testData";
-import { Author } from "../../types/author";
+import { TestSetup } from "../helpers/testSetup";
 
 // Mock the logger to avoid console output during tests
 jest.mock("../../logger", () => ({
@@ -13,16 +10,12 @@ jest.mock("../../logger", () => ({
 }));
 
 describe("Authors API - POST", () => {
-  let fastify: FastifyInstance;
-
   beforeEach(async () => {
-    fastify = buildFastify();
-    await fastify.ready();
-    await authorModel.clear();
+    await TestSetup.setup();
   });
 
-  afterEach(async () => {
-    await fastify.close();
+  afterAll(async () => {
+    await TestSetup.teardown();
   });
 
   describe("POST /v1/authors", () => {
@@ -33,7 +26,7 @@ describe("Authors API - POST", () => {
         birthYear: 1965,
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: authorData,
@@ -52,7 +45,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should create author using test data", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: testAuthors[0],
@@ -73,7 +66,7 @@ describe("Authors API - POST", () => {
         birthYear: 1980,
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidData,
@@ -94,7 +87,7 @@ describe("Authors API - POST", () => {
         birthYear: 1980,
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidData,
@@ -115,7 +108,7 @@ describe("Authors API - POST", () => {
         bio: "Valid bio",
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidData,
@@ -131,7 +124,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should validate empty name", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidAuthorData[0],
@@ -147,7 +140,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should validate empty bio", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidAuthorData[1],
@@ -163,7 +156,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should validate birth year range - too old", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidAuthorData[2],
@@ -177,7 +170,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should validate birth year range - future year", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: invalidAuthorData[3],
@@ -198,7 +191,7 @@ describe("Authors API - POST", () => {
         birthYear: 1980,
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: authorData,
@@ -221,7 +214,7 @@ describe("Authors API - POST", () => {
         birthYear: 1980,
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: authorData,
@@ -243,7 +236,7 @@ describe("Authors API - POST", () => {
         birthYear: 1980,
       };
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: authorData,
@@ -255,7 +248,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should handle malformed JSON", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: "invalid json",
@@ -268,7 +261,7 @@ describe("Authors API - POST", () => {
     });
 
     it("should handle empty payload", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "POST",
         url: "/v1/authors",
         payload: {},

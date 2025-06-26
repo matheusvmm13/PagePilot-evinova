@@ -1,10 +1,9 @@
-import { FastifyInstance } from "fastify";
-import { buildFastify } from "../../index";
 import { authorModel } from "../../models/authorModel";
 import { bookModel } from "../../models/bookModel";
 import { testAuthors, testBooks } from "../helpers/testData";
 import { Author } from "../../types/author";
 import { Book } from "../../types/books";
+import { TestSetup } from "../helpers/testSetup";
 
 // Mock the logger to avoid console output during tests
 jest.mock("../../logger", () => ({
@@ -15,22 +14,17 @@ jest.mock("../../logger", () => ({
 }));
 
 describe("Authors API - GET", () => {
-  let fastify: FastifyInstance;
-
   beforeEach(async () => {
-    fastify = buildFastify();
-    await fastify.ready();
-    await authorModel.clear();
-    await bookModel.clear();
+    await TestSetup.setup();
   });
 
-  afterEach(async () => {
-    await fastify.close();
+  afterAll(async () => {
+    await TestSetup.teardown();
   });
 
   describe("GET /v1/authors", () => {
     it("should return empty array when no authors exist", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors",
       });
@@ -55,7 +49,7 @@ describe("Authors API - GET", () => {
       await authorModel.create(testAuthors[0] as Author);
       await authorModel.create(testAuthors[1] as Author);
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors",
       });
@@ -88,7 +82,7 @@ describe("Authors API - GET", () => {
         });
       }
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors?page=2&limit=5",
       });
@@ -106,7 +100,7 @@ describe("Authors API - GET", () => {
     });
 
     it("should handle invalid pagination parameters", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors?page=-1&limit=0",
       });
@@ -118,7 +112,7 @@ describe("Authors API - GET", () => {
     });
 
     it("should return correct content type header", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors",
       });
@@ -133,7 +127,7 @@ describe("Authors API - GET", () => {
     it("should return author by ID", async () => {
       const author = await authorModel.create(testAuthors[0] as Author);
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: `/v1/authors/${author.id}`,
       });
@@ -147,7 +141,7 @@ describe("Authors API - GET", () => {
     });
 
     it("should return 400 for invalid UUID", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors/invalid-uuid",
       });
@@ -170,7 +164,7 @@ describe("Authors API - GET", () => {
         authorId: author.id,
       } as Book);
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: `/v1/authors/${author.id}/books`,
       });
@@ -186,7 +180,7 @@ describe("Authors API - GET", () => {
     it("should return empty array when author has no books", async () => {
       const author = await authorModel.create(testAuthors[0] as Author);
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: `/v1/authors/${author.id}/books`,
       });
@@ -199,7 +193,7 @@ describe("Authors API - GET", () => {
     });
 
     it("should return 400 for invalid UUID", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/authors/invalid-uuid/books",
       });

@@ -7,7 +7,7 @@ export class TestSetup {
   static fastify: FastifyInstance;
 
   static async setup() {
-    this.fastify = buildFastify();
+    this.fastify = buildFastify(true);
     await this.fastify.ready();
     await this.clearData();
   }

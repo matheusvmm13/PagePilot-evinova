@@ -1,10 +1,9 @@
-import { FastifyInstance } from "fastify";
-import { buildFastify } from "../../index";
 import { authorModel } from "../../models/authorModel";
 import { bookModel } from "../../models/bookModel";
 import { testAuthors, testBooks } from "../helpers/testData";
 import { Author } from "../../types/author";
 import { Book } from "../../types/books";
+import { TestSetup } from "../helpers/testSetup";
 
 // Mock the logger to avoid console output during tests
 jest.mock("../../logger", () => ({
@@ -15,25 +14,21 @@ jest.mock("../../logger", () => ({
 }));
 
 describe("Books API - GET", () => {
-  let fastify: FastifyInstance;
   let testAuthor: Author;
 
   beforeEach(async () => {
-    fastify = buildFastify();
-    await fastify.ready();
-    await authorModel.clear();
-    await bookModel.clear();
+    await TestSetup.setup();
 
     testAuthor = await authorModel.create(testAuthors[0] as Author);
   });
 
-  afterEach(async () => {
-    await fastify.close();
+  afterAll(async () => {
+    await TestSetup.teardown();
   });
 
   describe("GET /v1/books", () => {
     it("should return empty array when no books exist", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books",
       });
@@ -65,7 +60,7 @@ describe("Books API - GET", () => {
         authorId: testAuthor.id,
       } as Book);
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books",
       });
@@ -98,7 +93,7 @@ describe("Books API - GET", () => {
         });
       }
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books?page=2&limit=5",
       });
@@ -116,7 +111,7 @@ describe("Books API - GET", () => {
     });
 
     it("should handle invalid pagination parameters", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books?page=-1&limit=0",
       });
@@ -128,7 +123,7 @@ describe("Books API - GET", () => {
     });
 
     it("should return correct content type header", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books",
       });
@@ -146,7 +141,7 @@ describe("Books API - GET", () => {
         authorId: testAuthor.id,
       } as Book);
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: `/v1/books/${book.id}`,
       });
@@ -162,7 +157,7 @@ describe("Books API - GET", () => {
     });
 
     it("should return 400 for invalid UUID", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/invalid-uuid",
       });
@@ -180,7 +175,7 @@ describe("Books API - GET", () => {
         authorId: testAuthor.id,
       });
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/search?q=Gatsby",
       });
@@ -194,7 +189,7 @@ describe("Books API - GET", () => {
     });
 
     it("should return empty array when no matches found", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/search?q=nonexistent",
       });
@@ -207,7 +202,7 @@ describe("Books API - GET", () => {
     });
 
     it("should handle search without query parameter", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/search",
       });
@@ -235,7 +230,7 @@ describe("Books API - GET", () => {
         authorId: testAuthor.id,
       });
 
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/year/2020",
       });
@@ -250,7 +245,7 @@ describe("Books API - GET", () => {
     });
 
     it("should return empty array for year with no books", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/year/1999",
       });
@@ -263,7 +258,7 @@ describe("Books API - GET", () => {
     });
 
     it("should return 400 for invalid year parameter", async () => {
-      const response = await fastify.inject({
+      const response = await TestSetup.fastify.inject({
         method: "GET",
         url: "/v1/books/year/invalid",
       });
