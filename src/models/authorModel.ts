@@ -33,9 +33,12 @@ export class AuthorModel extends BaseModel {
 
   async searchByName(searchTerm: string) {
     const authors = await this.findAll();
+    if (searchTerm === "") {
+      return [];
+    }
     return authors.filter((author) =>
       author.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ) as Author[];
   }
 }
 

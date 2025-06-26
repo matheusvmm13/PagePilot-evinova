@@ -37,9 +37,12 @@ export class BookModel extends BaseModel {
 
   async searchByTitle(searchTerm: string) {
     const books = await this.findAll();
+    if (searchTerm === "") {
+      return [];
+    }
     return books.filter((book) =>
       book.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ) as Book[];
   }
 
   async findByPublicationYear(year: number) {
