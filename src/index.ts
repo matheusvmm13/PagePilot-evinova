@@ -83,7 +83,7 @@ async function startServer() {
     const host = process.env.HOST || "0.0.0.0";
 
     await fastify.listen({ port: Number(port), host });
-    logger.info(`Server is running on http://${host}:${port}`);
+    logger.info(`Server is running on http://${host}:${port}/v1`);
     logger.info(`Swagger docs available at http://${host}:${port}/docs`);
   } catch (err) {
     logger.error("Failed to start server", err);

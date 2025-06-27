@@ -8,9 +8,9 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "test": "jest --runInBand --verbose --detectOpenHandles",
-    "docker:build": "docker compose -f docker/docker-compose.yaml build",
-    "docker:up": "docker compose -f docker/docker-compose.yaml up",
-    "docker:down": "docker compose -f docker/docker-compose.yaml down"
+    "docker:up": "docker compose -f docker/docker-compose.yaml -f docker/docker-compose.dev.yaml up --build",
+    "docker:prod": "docker compose -f docker/docker-compose.yaml up --build",
+    "docker:down": "docker compose -f docker/docker-compose.yaml -f docker/docker-compose.dev.yaml down"
   },
   "keywords": [],
   "author": "Matheus Martins",
@@ -20,13 +20,13 @@
     "@fastify/helmet": "^13.0.1",
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
+    "@fastify/type-provider-typebox": "^5.1.0",
+    "@sinclair/typebox": "^0.34.37",
     "fastify": "^5.4.0",
     "uuid": "^11.1.0",
     "winston": "^3.13.0"
   },
   "devDependencies": {
-    "@fastify/type-provider-typebox": "^5.1.0",
-    "@sinclair/typebox": "^0.34.37",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.15.33",
     "@types/uuid": "^10.0.0",

@@ -45,6 +45,7 @@ export default async function utilityRoutes(fastify: FastifyInstance) {
                   authors: { type: "string" },
                   books: { type: "string" },
                   health: { type: "string" },
+                  docs: { type: "string" },
                 },
               },
             },

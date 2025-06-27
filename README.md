@@ -48,15 +48,26 @@ npm run lint
 ## Docker
 
 ```bash
-# Build and run
+# Start development environment
 npm run docker:up
 
-# Stop
+# Stop development environment
 npm run docker:down
-
-# Build only
-npm run docker:build
 ```
+
+```bash
+# Start production environment
+npm run docker:prod
+
+# Stop production environment
+npm run docker:down
+```
+
+### Access Points
+
+- **API**: http://localhost:3000/v1
+- **Health Check**: http://localhost:3000/health
+- **Documentation**: http://localhost:3000/docs
 
 ## API Documentation
 
